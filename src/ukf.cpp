@@ -57,6 +57,9 @@ UKF::UKF() {
   // Radar measurement noise standard deviation radius change in m/s
   std_radrd_ = 0.3;
 
+  NIS_radar_ = 0.0;
+  NIS_laser_ = 0.0;
+
   /**
   TODO:
 
@@ -321,6 +324,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K*z_diff;
   P_ = P_ - K*S*K.transpose();
+
+  NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
 
 
 }
