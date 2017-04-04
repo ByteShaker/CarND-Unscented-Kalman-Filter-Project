@@ -7,9 +7,11 @@
 #include <string>
 #include <fstream>
 #include "tools.h"
+#include "templates.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+//using std::range_error;
 
 class UKF {
 public:
@@ -85,6 +87,10 @@ public:
    */
   virtual ~UKF();
 
+  void InitializeCovariance();
+
+  void InitialiseStateVector(MeasurementPackage meas_package);
+
   /**
    * ProcessMeasurement
    * @param meas_package The latest measurement data of either radar or laser
@@ -109,6 +115,19 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+
+  void GenerateAugmentedSigmaPoints(const VectorXd &x, const MatrixXd &P, MatrixXd &Xsig_aug);
+
+  void SigmaPointPrediction(double delta_t, const MatrixXd &Xsig_aug, MatrixXd &Xsig_pred);
+
+  void PredictMeanAndCovariance(const MatrixXd &Xsig_pred, VectorXd &x, MatrixXd &P);
+
+  void PredictLidarMeasurement(const MatrixXd &Xsig_pred, MatrixXd &Zsig, VectorXd &z_pred, MatrixXd &S);
+
+  void PredictRadarMeasurement(const MatrixXd &Xsig_pred, MatrixXd &Zsig, VectorXd &z_pred, MatrixXd &S);
+
+  auto UpdateState(const VectorXd &z, const VectorXd &z_pred, const MatrixXd &S, const MatrixXd &Xsig_pred, const MatrixXd &Zsig, VectorXd &x, MatrixXd &P) -> VectorXd;
 };
 
 #endif /* UKF_H */
